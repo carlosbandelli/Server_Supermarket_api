@@ -24,6 +24,34 @@ export const createList = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const getListById = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const list = await prisma.list.findUnique({
+      where: {
+        id: Number(id),
+        userId: userId!,
+      },
+      select: {
+        name: true,
+        totalValue: true,
+        userId: true,
+        products: true,
+      },
+    });
+
+    if (!list) {
+      return res.status(404).json({ error: 'Lista não encontrada' });
+    }
+
+    return res.json(list);
+  } catch (error) {
+    return res.status(400).json({ error: 'Erro ao buscar lista' });
+  }
+};
+
 export const getLists = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
